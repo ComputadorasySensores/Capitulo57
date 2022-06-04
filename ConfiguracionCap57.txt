@@ -1,0 +1,35 @@
+Para crear el archivo wordpress.conf
+
+/////////////////////////
+
+upstream wp-php-handler {
+        server unix:/var/run/php/php7.4-fpm.sock;
+}
+server {
+        listen 80;
+        server_name _;
+        root /var/www/wordpress/;
+        index index.php;
+        location / {
+                try_files $uri $uri/ /index.php?$args;
+        }
+        location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass wp-php-handler;
+        }
+}
+
+
+//////////////////////////
+
+Para crear base de datos / tabla en MariaDB
+
+create database wordpress default character set utf8 collate utf8_unicode_ci;
+
+create user 'wpuser'@'localhost' identified by 'wpbase1@';
+
+grant all privileges on wordpress.* TO 'wpuser'@'localhost';
+
+flush privileges;
+
+exit
